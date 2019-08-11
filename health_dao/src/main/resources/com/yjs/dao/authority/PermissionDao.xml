@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yjs.dao.authority.PermissionDao">
+    <select id="findByRoleId" parameterType="Integer" resultType="Permission">
+        select p.* from t_permission p,t_role_permission rp where p.id = rp.permission_id and rp.role_id = #{roleId}
+    </select>
+
+    <!--新增-->
+    <insert id="add" parameterType="com.yjs.pojo.Permission">
+        insert into t_permission(name,keyword,description)
+        values
+        (#{name},#{keyword},#{description})
+    </insert>
+
+    <!--分页查询-->
+    <select id="selectByCondition" parameterType="string" resultType="com.yjs.pojo.Permission">
+        select * from t_permission
+        <if test="value != null and value.length > 0">
+            where keyword like '%${value}%' or name like '%${value}%'
+        </if>
+    </select>
+
+    <!--根据id删除指定权限-->
+    <delete id="deleteById" parameterType="int">
+        delete from t_permission where id = #{id}
+    </delete>
+    <!--根据权限id查询中间关系表，查询当前权限是否和检查组关联-->
+    <select id="findCountByPermissionId" resultType="long" parameterType="int">
+        select count(*) from t_role_permission where permission_id = #{permission_id}
+    </select>
+
+    <!--编辑（更新表内数据）-->
+    <update id="edit" parameterType="com.yjs.pojo.Permission">
+        update t_permission
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="keyword != null">
+                keyword = #{keyword},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!--根据id，查询权限-->
+    <select id="findById" parameterType="int" resultType="com.yjs.pojo.Permission">
+        SELECT * FROM t_permission WHERE id=#{id}
+    </select>
+
+    <!--查询所有权限-->
+    <select id="findAll" resultType="com.yjs.pojo.Permission">
+        select * from t_permission
+    </select>
+
+    <!--根据角色id查询权限信息-->
+    <select id="findPermissionById" resultType="com.yjs.pojo.Permission">
+        select * from t_permission  where id
+        in (select permission_id from t_role_permission where role_id=#{id})
+    </select>
+    
+</mapper>

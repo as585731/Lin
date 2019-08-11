@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/health_common/health_common.iml" filepath="$PROJECT_DIR$/health_common/health_common.iml" />
+      <module fileurl="file://$PROJECT_DIR$/health_dao/health_dao.iml" filepath="$PROJECT_DIR$/health_dao/health_dao.iml" />
+      <module fileurl="file://$PROJECT_DIR$/health_interface/health_interface.iml" filepath="$PROJECT_DIR$/health_interface/health_interface.iml" />
+      <module fileurl="file://$PROJECT_DIR$/health_jobs/health_jobs.iml" filepath="$PROJECT_DIR$/health_jobs/health_jobs.iml" />
+      <module fileurl="file://$PROJECT_DIR$/health_parent.iml" filepath="$PROJECT_DIR$/health_parent.iml" />
+      <module fileurl="file://$PROJECT_DIR$/health_pojo/health_pojo.iml" filepath="$PROJECT_DIR$/health_pojo/health_pojo.iml" />
+      <module fileurl="file://$PROJECT_DIR$/health_service/health_service.iml" filepath="$PROJECT_DIR$/health_service/health_service.iml" />
+      <module fileurl="file://$PROJECT_DIR$/health_web/health_web.iml" filepath="$PROJECT_DIR$/health_web/health_web.iml" />
+      <module fileurl="file://$PROJECT_DIR$/healthmobile_web/healthmobile_web.iml" filepath="$PROJECT_DIR$/healthmobile_web/healthmobile_web.iml" />
+    </modules>
+  </component>
+</project>

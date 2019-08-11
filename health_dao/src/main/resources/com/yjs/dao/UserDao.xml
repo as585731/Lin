@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yjs.dao.UserDao">
+    <select id="findUserByUsername" parameterType="String" resultType="User">
+        SELECT * FROM t_user WHERE username = #{username}
+    </select>
+
+
+    <!--新增,并且返回自增主键-->
+    <insert id="add" parameterType="com.yjs.pojo.User" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into t_user(birthday,gender,username,password,remark,station,telephone)
+        values
+        (#{birthday},#{gender},#{username},#{password},#{remark},#{station},#{telephone})
+    </insert>
+
+    <!--向中间表插入数据（建立角色和套餐关联关系）-->
+    <insert id="setUserAndRole" parameterType="hashmap">
+        insert into t_user_role(user_id,role_id)
+        values
+        (#{user_id},#{role_id})
+    </insert>
+
+    <!--按照指定条件，查询角色表（分页查询）-->
+    <select id="selectByCondition" parameterType="string" resultType="com.yjs.pojo.User">
+        select * from t_user
+        <if test="value != null and value.length > 0">
+            where username LIKE '%${value}%' or telephone  LIKE '%${value}%'
+        </if>
+    </select>
+
+    <!--根据id，查询用户表_角色项的关联表，得到用户所对应的所有的检查项的id-->
+    <select id="findRoleIdsByUserId" parameterType="int" resultType="int">
+        select role_id from t_user_role where user_id = #{id}
+    </select>
+
+    <!--根据角色id删除中间表数据（清理原有关联关系）-->
+    <delete id="deleteAssociation" parameterType="int">
+        delete from t_user_role where user_id = #{id}
+    </delete>
+
+    <!--编辑,更新用户表-->
+    <update id="edit" parameterType="com.yjs.pojo.User">
+        update t_user
+        <set>
+            <if test="birthday != null">
+                birthday = #{birthday},
+            </if>
+            <if test="gender != null">
+                gender = #{gender},
+            </if>
+            <if test="username != null">
+                username = #{username},
+            </if>
+            <if test="password != null">
+                password = #{password},
+            </if>
+            <if test="remark != null">
+                remark = #{remark},
+            </if>
+            <if test="station != null">
+                station = #{station},
+            </if>
+            <if test="telephone != null">
+                telephone = #{telephone},
+            </if>
+          
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 根据id删除对应角色的字段-->
+    <delete id="deleteUserById" parameterType="int">
+        DELETE FROM t_user WHERE id= #{id}
+    </delete>
+
+    <!--获取所有用户信息（前端用）-->
+    <select id="findAll" resultType="com.yjs.pojo.User">
+        select * from t_user
+    </select>
+
+    <resultMap type="com.yjs.pojo.User" id="baseResultMap">
+        <id column="id" property="id"/>
+        <result column="birthday" property="birthday"/>
+        <result column="gender" property="gender"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="remark" property="remark"/>
+        <result column="station" property="station"/>
+        <result column="telephone" property="telephone"/>
+    </resultMap>
+    <!--
+    使用映射查询，返回的包装类的roles字段（集合）进行延迟查询，
+    调用的查询方法是com.yjs.dao.RoleDao的findRoleById方法，传递数据的列是当前表的id列
+    -->
+    <resultMap type="com.yjs.pojo.User" id="findByIdResultMap" extends="baseResultMap">
+        <collection property="roles" javaType="java.util.HashSet"
+                    ofType="com.yjs.pojo.Role" column="id"
+                    select="com.yjs.dao.authority.RoleDao.findRoleById">
+        </collection>
+    </resultMap>
+    <select id="findById" resultMap="findByIdResultMap">
+        select * from t_user  where id=#{id}
+    </select>
+
+    <select id="findUserCount" resultType="map">
+        select s.name,count(o.id) as value
+        from t_order o ,t_user s
+        where o.user_id = s.id
+        group by s.name
+    </select>
+
+</mapper>

@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+						http://www.springframework.org/schema/beans/spring-beans.xsd
+						http://www.springframework.org/schema/mvc
+						http://www.springframework.org/schema/mvc/spring-mvc.xsd
+						http://code.alibabatech.com/schema/dubbo
+						http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+						http://www.springframework.org/schema/context
+						http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!--扫描包-->
+    <context:component-scan base-package="com.yjs.jobs"/>
+
+    <!-- 注册自定义Job【清理图片】 -->
+    <bean id="ClearImgJob" class="com.yjs.jobs.ClearImgJob"/>
+    <!-- 注册自定义Job【清理历史记录】 -->
+    <bean id="ClearOrderSetting" class="com.yjs.jobs.ClearOrderSetting"/>
+
+    <!-- 注册JobDetail,作用是负责通过反射调用指定的Job【清理图片】 -->
+    <bean id="jobDetail"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!-- 注入目标对象 -->
+        <property name="targetObject" ref="ClearImgJob"/>
+        <!-- 注入目标方法 -->
+        <property name="targetMethod" value="cleanImg"/>
+    </bean>
+    
+    <!-- 注册jobOrder,作用是负责通过反射调用指定的Job【清理历史记录】 -->
+    <bean id="jobOrder"
+          class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!-- 注入目标对象 -->
+        <property name="targetObject" ref="ClearOrderSetting"/>
+        <!-- 注入目标方法 -->
+        <property name="targetMethod" value="cleanHistoryOrder"/>
+    </bean>
+    
+    
+    <!-- 注册一个触发器，指定任务触发的时间【图片清理】 -->
+    <bean id="myTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <!-- 注入JobDetail -->
+        <property name="jobDetail" ref="jobDetail"/>
+        <!-- 指定触发的时间，基于Cron表达式 -->
+        <property name="cronExpression">
+            <value>0/10 * * * * ?</value>
+        </property>
+    </bean>
+
+    <!--注册一个触发器，指定任务触发的时间【历史记录清理】-->
+    <bean id="ClearOrderTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <!-- 注入JobDetail -->
+        <property name="jobDetail" ref="jobOrder"/>
+        <!-- 指定触发的时间，基于Cron表达式 -->
+        <property name="cronExpression">
+            <value>0 0 2 1 1/1 ? *</value>
+        </property>
+    </bean>
+    
+    <!-- 注册一个统一的调度工厂，通过这个调度工厂调度任务 -->
+    <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <!-- 注入多个触发器 -->
+        <property name="triggers">
+            <list>
+                <ref bean="myTrigger"/>
+                <ref bean="ClearOrderTrigger"/>
+            </list>
+        </property>
+    </bean>
+
+    <!--Jedis连接池的相关配置-->
+    <bean id="jedisPoolConfig" class="redis.clients.jedis.JedisPoolConfig">
+        <property name="maxTotal">
+            <value>200</value>
+        </property>
+        <property name="maxIdle">
+            <value>50</value>
+        </property>
+        <property name="testOnBorrow" value="true"/>
+        <property name="testOnReturn" value="true"/>
+    </bean>
+    <bean id="jedisPool" class="redis.clients.jedis.JedisPool">
+        <constructor-arg name="poolConfig" ref="jedisPoolConfig" />
+        <constructor-arg name="host" value="127.0.0.1" />
+        <constructor-arg name="port" value="6379" type="int" />
+        <constructor-arg name="timeout" value="30000" type="int" />
+    </bean>
+    
+    <!--加载duboo相关配置-->
+    <!-- 指定应用名称 -->
+    <dubbo:application name="health_jobs" />
+    <!--指定服务注册中心地址-->
+    <dubbo:registry address="zookeeper://127.0.0.1:2181"/>
+    <!--批量扫描-->
+    <dubbo:annotation package="com.yjs.jobs" />
+    <!--超时及不检查服务是否启动-->
+    <dubbo:consumer timeout="6000" check="false"/>
+</beans>

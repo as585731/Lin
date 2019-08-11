@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yjs.dao.authority.RoleDao">
+
+    <select id="findByUid" parameterType="Integer" resultType="Role">
+        select r.* from t_role r,t_user_role ur where r.id = ur.role_id and ur.user_id = #{userId}
+    </select>
+
+    <!--新增,并且返回自增主键-->
+    <insert id="add" parameterType="com.yjs.pojo.Role" useGeneratedKeys="true" keyProperty="id" keyColumn="id">
+        insert into t_role(name,keyword,description)
+        values
+        (#{name},#{keyword},#{description})
+    </insert>
+
+    <!--按照指定条件，查询角色表-->
+    <select id="selectByCondition" parameterType="string" resultType="com.yjs.pojo.Role">
+        select * from t_role
+        <if test="value != null and value.length > 0">
+            where keyword LIKE '%${value}%' or name  LIKE '%${value}%'
+        </if>
+    </select>
+
+
+    <!--根据id,查询对应角色表-->
+    <select id="findById" parameterType="int" resultType="com.yjs.pojo.Role">
+        select * from t_role where id = #{id}
+    </select>
+    <!--根据id，查询角色表_权限的关联表，得到角色所对应的所有的权限的id-->
+    <select id="findPermissionIdsByRoleId" parameterType="int" resultType="int">
+        select permission_id from t_role_permission where role_id = #{id}
+    </select>
+
+    <!--根据id，查询角色表_菜单的关联表，得到角色所对应的所有的菜单的id-->
+    <select id="findMenuIdsByRoleId" parameterType="int" resultType="int">
+        select menu_id from t_role_menu where role_id = #{id}
+    </select>
+    
+
+    <!--向权限中间表插入数据（建立角色和权限关联关系）-->
+    <insert id="setRoleAndPermission" parameterType="hashmap">
+        insert into t_role_permission(role_id,permission_id)
+        values
+        (#{role_id},#{permission_id})
+    </insert>
+
+    <!--向菜单中间表插入数据（建立角色和权限关联关系）-->
+    <insert id="setRoleAndMenu" parameterType="hashmap">
+        insert into t_role_menu(role_id,menu_id)
+        values
+        (#{role_id},#{menu_id})
+    </insert>
+
+
+    <!--根据角色id删除中间表数据（清理原有关联关系）-->
+    <delete id="deleteAssociation" parameterType="int">
+        delete from t_role_permission where role_id = #{id}
+    </delete>
+
+    <delete id="deleteAssociation2" parameterType="int">
+        delete from t_role_menu where role_id = #{id}
+    </delete>
+
+
+    <!--编辑,更新角色表-->
+    <update id="edit" parameterType="com.yjs.pojo.Role">
+        update t_role
+        <set>
+            <if test="name != null">
+                name = #{name},
+            </if>
+            <if test="keyword != null">
+                keyword = #{keyword},
+            </if>
+            <if test="description != null">
+                description = #{description},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <!-- 根据id删除对应角色的字段-->
+    <delete id="deleteRoleById" parameterType="int">
+        DELETE FROM t_role WHERE id= #{id}
+    </delete>
+
+    <!--查询所有角色-->
+    <select id="findAll" resultType="com.yjs.pojo.Role">
+        select * from t_role
+    </select>
+
+
+    <resultMap type="com.yjs.pojo.Role" id="baseResultMap">
+        <id column="id" property="id"/>
+        <result column="name" property="name"/>
+        <result column="keyword" property="keyword"/>
+        <result column="description" property="description"/>
+    </resultMap>
+    <resultMap type="com.yjs.pojo.Role" id="findByIdResultMap" extends="baseResultMap">
+        <!--查询该角色所属权限对象-->
+        <collection property="permissions" javaType="java.util.HashSet"
+                    ofType="com.yjs.pojo.Permission" column="id"
+                    select="com.yjs.dao.authority.PermissionDao.findPermissionById">
+        </collection>
+        <!--查询该角色所属菜单对象-->
+        <collection property="menus" javaType="java.util.LinkedHashSet"
+                    ofType="com.yjs.pojo.Menu" column="id"
+                    select="com.yjs.dao.authority.MenuDao.findMenuById">
+        </collection>
+    </resultMap>
+    <!--根据套餐id查询权限信息
+    使用延迟映射查询，
+    -->
+    <select id="findRoleById" resultMap="findByIdResultMap">
+        select * from t_role  where id
+        in (select role_id from t_user_role where user_id=#{id})
+    </select>
+    
+    <select id="selectConutUser" parameterType="int" resultType="int">
+        SELECT count(*) FROM t_user_role where role_id = #{id} 
+    </select>
+
+</mapper>
