@@ -1,9 +1,15 @@
 package com.yjs.service;
 
 import com.alibaba.dubbo.config.annotation.Service;
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.yjs.constant.MessageConstant;
 import com.yjs.dao.MemberDao;
+import com.yjs.entity.PageResult;
+import com.yjs.entity.Result;
 import com.yjs.pojo.Member;
 import com.yjs.service.MemberService;
+import com.yjs.utlis.DateUtils;
 import com.yjs.utlis.MD5Utils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -34,7 +40,7 @@ public class MemberServiceImp implements MemberService {
         return memberDao.findByTelephone(telephone);
     }
 
-    @Override
+
     //根据list集合内的月份，统计每个月的会员数量
     public Map<String, Object> findMemberCountByMonth(String value1) throws ParseException {
         //创建一个集合，用来存储需要查询的月份
@@ -167,5 +173,110 @@ public class MemberServiceImp implements MemberService {
         return memberDao.querUserAge();  
     }
 
+
+    // 根据月份动态获取会员数量
+    @Override
+    public Map<String, Object> countUserDynamic(String startDate, String endDate) throws Exception {
+        // 创建map存放months和memberCount
+        Map<String, Object> map = new HashMap<>();
+        //创建list存放months
+        List<String> list = new ArrayList<>();
+        //创建list存放memberCount
+        List<Integer> memberCount = new ArrayList<>();
+        // 获取日历实例对象
+        Calendar calendar = Calendar.getInstance();
+
+        // 将String日期转为date类型
+        Date newStartDate = DateUtils.parseString2Date(startDate);
+
+        // 将日历时间设置为页面传过来的起始时间
+        calendar.setTime(newStartDate);
+
+        // 计算两个日期之间的月份差，用作循环条件
+        int monthCount = getMonthSpace(startDate, endDate);
+        for (int i = 0; i <= monthCount; i++) {
+            list.add(new SimpleDateFormat("yyyy-MM").format(calendar.getTime()));
+            calendar.add(Calendar.MONTH, 1);
+        }
+        map.put("months", list);
+
+        // 查询不同时期的会员数量
+        for (String m : list) {
+            m = m + ".31";
+            Integer count = memberDao.findMemberCountBeforeDate(m);
+            memberCount.add(count);
+        }
+        map.put("memberCount", memberCount);
+
+        return map;
+    }
+
+    // 展示前12月的会员数量
+    @Override
+    public List<Integer> findMemberCountByMonth(List<String> month) {
+        List<Integer> list = new ArrayList<>();
+        for (String m : month) {
+            m = m + ".31";
+            Integer count = memberDao.findMemberCountBeforeDate(m);
+            list.add(count);
+        }
+        return list;
+    }
+
+    // 分页展示
+    @Override
+    public Result findPage(Integer currentPage, Integer pageSize, String queryString) throws Exception {
+        PageHelper.startPage(currentPage,pageSize);
+        Page<Member> members = memberDao.selectByCondition(queryString);
+        List<Member> result = members.getResult();
+        for (Member member : result) {
+
+            String birthday_str = DateUtils.parseDate2String(member.getBirthday());
+            String regTime_str = DateUtils.parseDate2String(member.getRegTime());
+            member.setBirthday_str(birthday_str);
+            member.setRegTime_str(regTime_str);
+        }
+        return new Result(true, MessageConstant.QUERY_MEMBER_SUCCESS,new PageResult(members.getTotal(),result));
+    }
+
+    // 编辑会员信息
+    @Override
+    public void edit(Member member) {
+        memberDao.edit(member);
+    }
+
+    // 据用户id删除一条会员信息
+    @Override
+    public void deleteById(Integer id) {
+        memberDao.deleteById(id);
+    }
+
+    //编辑的数据回显，根据用户id查询一条会员信息
+    @Override
+    public Member findById(Integer id) {
+        return memberDao.findById(id);
+    }
+
+
+    /**
+     * 计算跨年月份差
+     *
+     * @param str1
+     * @param str2
+     * @return
+     * @throws ParseException
+     */
+    private static int getMonthSpace(String str1, String str2) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM");
+        Calendar bef = Calendar.getInstance();
+        Calendar aft = Calendar.getInstance();
+        bef.setTime(sdf.parse(str1));
+        aft.setTime(sdf.parse(str2));
+        int result = aft.get(Calendar.MONTH) - bef.get(Calendar.MONTH);
+        int month = (aft.get(Calendar.YEAR) - bef.get(Calendar.YEAR)) * 12;
+        int abs = Math.abs(month + result);
+        //System.out.println(abs);
+        return abs;
+    }
 
 }

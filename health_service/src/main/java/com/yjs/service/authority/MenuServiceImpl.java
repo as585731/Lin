@@ -15,7 +15,12 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service(interfaceClass = MenuService.class)
+@Transactional
 public class MenuServiceImpl implements MenuService {
+
+    @Autowired
+    private MenuDao menuDao;
+
 
     @Override
     //查询user对象对应的菜单
@@ -24,8 +29,7 @@ public class MenuServiceImpl implements MenuService {
         return menus;
     }
 
-    @Autowired
-    private MenuDao menuDao;
+
     
     @Override
     //根据表单提交的数据新增菜单

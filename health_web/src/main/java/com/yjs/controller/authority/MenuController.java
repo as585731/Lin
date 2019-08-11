@@ -122,16 +122,15 @@ public class MenuController {
             org.springframework.security.core.userdetails.User user =
                     (org.springframework.security.core.userdetails.User)
                             SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-            User user1 = new User();
             //获得用户名
             String username = user.getUsername();
             //调用service层方法得到该用户的菜单集合
             List<Menu> menus = menuService.selectByUser(username);
             //返回结果集
-            return new Result(true,"查询菜单成功",menus);
+            return new Result(true,MessageConstant.GET_MENU_SUCCESS,menus);
 
         }catch (Exception e){
-            return new Result(false, MessageConstant.GET_USERNAME_FAIL);
+            return new Result(false, MessageConstant.GET_MENU_FAIL);
         }
     }
 

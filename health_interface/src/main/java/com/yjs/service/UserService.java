@@ -15,7 +15,7 @@ public interface UserService {
     void add(User user, Integer[] roleIds);
 
     //分页查询
-    PageResult pageQuery(Integer currentPage, Integer pageSize, String queryString);
+    PageResult pageQuery(Integer currentPage, Integer pageSize, String queryString) throws Exception;
 
     //根据id，查询对应用户（回显）
     User findById(Integer id);

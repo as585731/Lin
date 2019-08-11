@@ -14,10 +14,28 @@ public class Member implements Serializable{
     private String idCard;//身份证号
     private String phoneNumber;//手机号
     private Date regTime;//注册时间
+    private String regTime_str;//注册时间
     private String password;//登录密码
     private String email;//邮箱
     private Date birthday;//出生日期
+    private String birthday_str;//出生日期
     private String remark;//备注
+
+    public String getRegTime_str() {
+        return regTime_str;
+    }
+
+    public void setRegTime_str(String regTime_str) {
+        this.regTime_str = regTime_str;
+    }
+
+    public String getBirthday_str() {
+        return birthday_str;
+    }
+
+    public void setBirthday_str(String birthday_str) {
+        this.birthday_str = birthday_str;
+    }
 
     public Integer getId() {
         return id;

@@ -38,7 +38,7 @@ public class ReportController {
     
     
     //会员数量统计
-    @RequestMapping("/getMemberReport")
+    /*@RequestMapping("/getMemberReport")
     public Result getMemberReport(String value1){
 
         //调用service层
@@ -51,6 +51,39 @@ public class ReportController {
         }
         //返回结果集
         return new Result(true, MessageConstant.GET_MEMBER_NUMBER_REPORT_SUCCESS,map);
+    }*/
+
+    //会员数量统计(前12月)
+    @RequestMapping("/getMemberReport")
+    public Result getMemberReport() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, -12);// 获得当前日期之前12个月的日期
+
+        List<String> list = new ArrayList<>();
+
+        for (int i = 0; i < 12; i++) {
+            calendar.add(Calendar.MONTH, 1);
+            list.add(new SimpleDateFormat("yyyy.MM").format(calendar.getTime()));
+        }
+
+        HashMap<String, Object> map = new HashMap<>();
+        map.put("months", list);
+
+        List<Integer> memberCount = memberService.findMemberCountByMonth(list);
+        map.put("memberCount", memberCount);
+
+        return new Result(true, MessageConstant.GET_MEMBER_NUMBER_REPORT_SUCCESS, map);
+    }
+    // 根据月份动态获取会员数量
+    @RequestMapping("/countUserDynamic")
+    public Result countUserDynamic(String startDate,String endDate) {
+        try {
+            Map<String,Object> map = memberService.countUserDynamic(startDate,endDate);
+            return new Result(true, MessageConstant.GET_MEMBER_NUMBER_REPORT_SUCCESS, map);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return new Result(false, MessageConstant.GET_MEMBER_NUMBER_REPORT_FAIL);
+        }
     }
     
     //套餐占比统计

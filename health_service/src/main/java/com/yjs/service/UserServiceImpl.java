@@ -15,6 +15,7 @@ import com.yjs.pojo.Role;
 import com.yjs.pojo.User;
 import com.yjs.pojo.User;
 import com.yjs.service.UserService;
+import com.yjs.utlis.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.Jedis;
@@ -81,11 +82,16 @@ public class UserServiceImpl implements UserService{
 
     @Override
     //分页查询
-    public PageResult pageQuery(Integer currentPage, Integer pageSize, String queryString) {
+    public PageResult pageQuery(Integer currentPage, Integer pageSize, String queryString) throws Exception {
         //使用插件进行分页查询
         PageHelper.startPage(currentPage,pageSize);
         //传入条件进行查询
         Page<User> page =  userDao.selectByCondition(queryString);
+        List<User> result = page.getResult();
+        for (User user : result) {
+            String date = DateUtils.parseDate2String(user.getBirthday());
+            user.setBirth(date);
+        }
         //从page对象中取出我们要的数据，封装入PageResult对象返回
         return new PageResult(page.getTotal(),page.getResult());
     }

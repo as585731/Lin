@@ -68,7 +68,7 @@ public class UserController {
 
     //分页查询
     @RequestMapping("/findPage")
-    public PageResult findPage(@RequestBody QueryPageBean queryPageBean) {
+    public PageResult findPage(@RequestBody QueryPageBean queryPageBean) throws Exception {
 
         //调用业务层，传入页码，每页记录数，查询条件，得到分页结果集
         PageResult pageResult = userService.pageQuery(

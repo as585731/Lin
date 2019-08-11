@@ -6,6 +6,9 @@
     <file type="web" url="file://$PROJECT_DIR$/health_web" />
     <file type="web" url="file://$PROJECT_DIR$/healthmobile_web" />
   </component>
+  <component name="JavaScriptSettings">
+    <option name="languageLevel" value="ES6" />
+  </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
@@ -13,7 +16,7 @@
       </list>
     </option>
   </component>
-  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_9" project-jdk-name="9.0" project-jdk-type="JavaSDK">
+  <component name="ProjectRootManager" version="2" languageLevel="JDK_1_8" default="false" project-jdk-name="1.8" project-jdk-type="JavaSDK">
     <output url="file://$PROJECT_DIR$/classes" />
   </component>
 </project>
