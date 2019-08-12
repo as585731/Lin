@@ -38,4 +38,7 @@ public interface UserDao {
     List<User> findAll();
 
     List<Map<String,Object>> findUserCount();
+
+    //根据用户名修改当前对象的密码
+    void editPass(User user);
 }

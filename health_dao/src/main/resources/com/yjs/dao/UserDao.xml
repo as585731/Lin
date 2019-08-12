@@ -52,7 +52,7 @@
             <if test="username != null">
                 username = #{username},
             </if>
-            <if test="password != null">
+            <if test="password != null&amp;&amp;password !=''">
                 password = #{password},
             </if>
             <if test="remark != null">
@@ -64,7 +64,7 @@
             <if test="telephone != null">
                 telephone = #{telephone},
             </if>
-          
+
         </set>
         where id = #{id}
     </update>
@@ -110,4 +110,8 @@
         group by s.name
     </select>
 
+    <!--根据用户名修改当前对象的密码-->
+    <update id="editPass" parameterType="User">
+        UPDATE t_user set password = #{password} where username = #{username}
+    </update>
 </mapper>

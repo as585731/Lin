@@ -2,7 +2,6 @@ package com.yjs.service;
 
 import com.yjs.entity.PageResult;
 import com.yjs.pojo.User;
-import com.yjs.pojo.User;
 
 import java.util.List;
 import java.util.Map;
@@ -15,7 +14,7 @@ public interface UserService {
     void add(User user, Integer[] roleIds);
 
     //分页查询
-    PageResult pageQuery(Integer currentPage, Integer pageSize, String queryString) throws Exception;
+    PageResult pageQuery(Integer currentPage, Integer pageSize, String queryString);
 
     //根据id，查询对应用户（回显）
     User findById(Integer id);
@@ -35,5 +34,6 @@ public interface UserService {
 
     //
     List<Map<String,Object>> findUserCount();
-    
+
+    void editPass(User user);
 }

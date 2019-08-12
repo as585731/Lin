@@ -2,17 +2,15 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="com.yjs.dao.authority.MenuDao">
-    <select id="findByRoleId" parameterType="Integer" resultType="com.yjs.pojo.Menu">
-        SELECT p.*
-        FROM t_menu p, t_role_menu rp
-        WHERE p.id = rp.menu_id AND rp.role_id = #{roleId}
+    <select id="findByRoleId" parameterType="Integer" resultType="Menu">
+        select p.* from t_menu p,t_role_menu rp where p.id = rp.menu_id and rp.role_id = #{roleId}
     </select>
 
     <!--新增-->
     <insert id="add" parameterType="com.yjs.pojo.Menu">
-        INSERT INTO t_menu (name, linkUrl, path, priority, icon, description, parentMenuId, level)
-        VALUES
-            (#{name}, #{linkUrl}, #{path}, #{priority}, #{icon}, #{description}, #{parentMenuId}, #{level})
+        insert into t_menu(name,linkUrl,path,priority,icon,description,parentMenuId,level)
+        values
+        (#{name},#{linkUrl},#{path},#{priority},#{icon},#{description},#{parentMenuId},#{level})
     </insert>
 
     <!--分页查询-->
@@ -25,14 +23,11 @@
 
     <!--根据id删除指定菜单-->
     <delete id="deleteById" parameterType="int">
-        DELETE FROM t_menu
-        WHERE id = #{id}
+        delete from t_menu where id = #{id}
     </delete>
     <!--根据菜单id查询中间关系表，查询当前菜单是否和角色关联-->
     <select id="findCountByMenuId" resultType="long" parameterType="int">
-        SELECT count(*)
-        FROM t_role_menu
-        WHERE menu_id = #{menu_id}
+        select count(*) from t_role_menu where menu_id = #{menu_id}
     </select>
 
     <!--编辑（更新表内数据）-->
@@ -60,6 +55,9 @@
             <if test="parentMenuId != null">
                 parentMenuId = #{parentMenuId},
             </if>
+            <if test="parentMenuId == null||parentMenuId == '' ">
+                parentMenuId = NULL ,
+            </if>
             <if test="level != null">
                 level = #{level},
             </if>
@@ -69,26 +67,20 @@
 
     <!--根据id，查询菜单-->
     <select id="findById" parameterType="int" resultType="com.yjs.pojo.Menu">
-        SELECT *
-        FROM t_menu
-        WHERE id = #{id}
+        SELECT * FROM t_menu WHERE id=#{id}
     </select>
 
     <!--查询所有菜单-->
     <select id="findAll" resultType="com.yjs.pojo.Menu">
-        SELECT *
-        FROM t_menu
+        select * from t_menu
     </select>
 
     <!--根据角色id查询菜单信息-->
     <select id="findMenuById" resultType="com.yjs.pojo.Menu">
-        SELECT *
-        FROM t_menu
-        WHERE id
-              IN (SELECT menu_id
-                  FROM t_role_menu
-                  WHERE role_id = #{id})
+        select * from t_menu  where id
+        in (select menu_id from t_role_menu where role_id=#{id})
     </select>
+
 
 
     <resultMap type="com.yjs.pojo.Menu" id="baseResultMap">
@@ -104,44 +96,33 @@
 
     <resultMap type="com.yjs.pojo.Menu" id="findByIdResultMap" extends="baseResultMap">
         <collection property="children" javaType="ArrayList"
-                    ofType="com.yjs.pojo.Menu" column="{rid=rid,id=id}"
+                    ofType="com.yjs.pojo.Menu" column ="{rid=rid,id=id}"
                     select="findMenuLv2ByRid">
         </collection>
     </resultMap>
 
     <!--根据用户查询该用户的权限菜单对象-->
     <select id="selectByUser" parameterType="com.yjs.pojo.User" resultMap="findByIdResultMap">
-        SELECT
-            tm.*,
-            trm.role_id rid
-        FROM t_user tu, t_role tr, t_role_menu trm, t_menu tm
-        WHERE
-            tu.username = #{username} AND tu.id = tr.id AND tr.id = trm.role_id AND trm.menu_id = tm.id AND tm.level = 1
-
+        SELECT m.*,rm.`role_id` rid FROM t_user u , t_user_role ur,t_role r , t_role_menu rm , t_menu m
+        WHERE u.`username` = #{username}
+        AND u.id = ur.`user_id` AND ur.`role_id` = r.`id` AND r.`id` = rm.`role_id` AND rm.`menu_id`=m.`id` AND LEVEL = 1
     </select>
 
     <!--根据rid和level为1的菜单id查询它所属的level为2的菜单对象-->
     <select id="findMenuLv2ByRid" parameterType="map" resultType="com.yjs.pojo.Menu">
-        SELECT m.*
-        FROM t_role_menu rm, t_menu m
-        WHERE rm.`role_id` = #{rid} AND rm.`menu_id` = m.`id` AND LEVEL = 2
-              AND m.`parentMenuId` = #{id}
+        SELECT m.* FROM t_role_menu rm , t_menu m WHERE rm.`role_id`= #{rid} AND rm.`menu_id` = m.`id` AND LEVEL = 2
+        AND m.`parentMenuId` = #{id}
     </select>
 
     <!--查询所有level为1的菜单的名称和id-->
     <!--查询所有菜单-->
     <select id="selectParentMenuIds" resultType="map">
-        SELECT
-            id,
-            name
-        FROM t_menu
-        WHERE level = 1
+        select id,name from t_menu where level = 1
     </select>
 
     <!--查询该菜单的子菜单数量-->
     <select id="selectSubmenuCount" parameterType="int" resultType="int">
-        SELECT COUNT(*)
-        FROM t_menu
-        WHERE parentMenuId = #{id}
+        SELECT COUNT(*) FROM t_menu WHERE parentMenuId = #{id}
     </select>
+
 </mapper>
