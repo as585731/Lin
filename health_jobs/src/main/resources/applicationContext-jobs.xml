@@ -57,6 +57,7 @@
         <!-- 指定触发的时间，基于Cron表达式 -->
         <property name="cronExpression">
             <value>0 0 2 1 1/1 ? *</value>
+            <!--<value>0/10 * * * * ?</value>-->
         </property>
     </bean>
     

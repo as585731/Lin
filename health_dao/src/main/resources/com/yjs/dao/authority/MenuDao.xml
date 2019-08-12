@@ -105,13 +105,13 @@
     <select id="selectByUser" parameterType="com.yjs.pojo.User" resultMap="findByIdResultMap">
         SELECT m.*,rm.`role_id` rid FROM t_user u , t_user_role ur,t_role r , t_role_menu rm , t_menu m
         WHERE u.`username` = #{username}
-        AND u.id = ur.`user_id` AND ur.`role_id` = r.`id` AND r.`id` = rm.`role_id` AND rm.`menu_id`=m.`id` AND LEVEL = 1
+        AND u.id = ur.`user_id` AND ur.`role_id` = r.`id` AND r.`id` = rm.`role_id` AND rm.`menu_id`=m.`id` AND LEVEL = 1 ORDER BY priority ASC
     </select>
 
     <!--根据rid和level为1的菜单id查询它所属的level为2的菜单对象-->
     <select id="findMenuLv2ByRid" parameterType="map" resultType="com.yjs.pojo.Menu">
         SELECT m.* FROM t_role_menu rm , t_menu m WHERE rm.`role_id`= #{rid} AND rm.`menu_id` = m.`id` AND LEVEL = 2
-        AND m.`parentMenuId` = #{id}
+        AND m.`parentMenuId` = #{id} ORDER BY priority ASC
     </select>
 
     <!--查询所有level为1的菜单的名称和id-->

@@ -13,6 +13,7 @@ public class ClearOrderSetting {
 
     //定时清理上上月的可预约人数
     public void cleanHistoryOrder(){
+
         //创建一个日历对象
         Calendar calendar = Calendar.getInstance();
         //将日历对象的月份字段，设置为上个月前
@@ -28,5 +29,6 @@ public class ClearOrderSetting {
             System.out.println("历史记录删除失败");
             e.printStackTrace();
         }
+
     }
 }

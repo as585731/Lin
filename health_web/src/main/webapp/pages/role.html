@@ -149,6 +149,7 @@
                                                 <tr>
                                                     <th>选择</th>
                                                     <th>菜单名称</th>
+                                                    <th>路由路径</th>
                                                     <th>优先级</th>
                                                     <th>项目说明</th>
                                                 </tr>
@@ -159,6 +160,7 @@
                                                         <input :id="c.id" v-model="menuIds" type="checkbox" :value="c.id">
                                                     </td>
                                                     <td><label :for="c.id">{{c.name}}</label></td>
+                                                    <td><label :for="c.id">{{c.path}}</label></td>
                                                     <td><label :for="c.id">{{c.priority}}</label></td>
                                                     <td><label :for="c.id">{{c.description}}</label></td>
                                                 </tr>
@@ -242,6 +244,7 @@
                                                 <tr>
                                                     <th>选择</th>
                                                     <th>菜单名称</th>
+                                                    <th>路由路径</th>
                                                     <th>优先级</th>
                                                     <th>描述</th>
                                                 </tr>
@@ -252,6 +255,7 @@
                                                         <input :id="c.id" v-model="menuIds" type="checkbox" :value="c.id">
                                                     </td>
                                                     <td><label :for="c.id">{{c.name}}</label></td>
+                                                    <td><label :for="c.id">{{c.path}}</label></td>
                                                     <td><label :for="c.id">{{c.priority}}</label></td>
                                                     <td><label :for="c.id">{{c.description}}</label></td>
                                                 </tr>

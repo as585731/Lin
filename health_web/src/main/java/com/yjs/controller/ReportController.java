@@ -87,24 +87,24 @@ public class ReportController {
     }
     
     //套餐占比统计
-/*    @RequestMapping("/getSetmealReport")
+    @RequestMapping("/getSetmealSexReport")
     public Result getSetmealReport(){
-        *//*调用业务层，查询当前所有预约信息，返回一个list，list内存有一个map集合，
-        该map集合内有两个key，分别是name和value，name存放套餐的名字，value存放套餐的预约数量
-         *//*
+       // 调用业务层，查询当前所有预约信息，返回一个list，list内存有一个map集合，
+        //该map集合内有两个key，分别是name和value，name存放套餐的名字，value存放套餐的预约数量
+
         List<Map<String, Object>> list = setmealService.findSetmealCount();
-        
-        *//*把list存入map，该map供前端页面的series字段的data属性接收，data属性是一个集合，
-        ，集合内的每个元素代表饼图的一个分类，每个元素有value属性，和name属性，分别代表数量和名字
-        *//*
+
+        //把list存入map，该map供前端页面的series字段的data属性接收，data属性是一个集合，
+        //，集合内的每个元素代表饼图的一个分类，每个元素有value属性，和name属性，分别代表数量和名字
+
         Map<String,Object> map = new HashMap<>();
         map.put("setmealCount",list);
 
-        *//*将map内的name取出来放到一个list集合中，在将list集合存入map中，key为setmealNames，
-        前端页面legend字段的data属性接收该属性，该属性是一个list集合，存储饼图分类的示例图，需要和饼图上的分类数据一一对应
-        
-        
-        * *//*
+        //将map内的name取出来放到一个list集合中，在将list集合存入map中，key为setmealNames，
+        //前端页面legend字段的data属性接收该属性，该属性是一个list集合，存储饼图分类的示例图，需要和饼图上的分类数据一一对应
+
+
+
         List<String> setmealNames = new ArrayList<>();
         for(Map<String,Object> m : list){
             String name = (String) m.get("name");
@@ -113,7 +113,7 @@ public class ReportController {
         map.put("setmealNames",setmealNames);
 
         return new Result(true, MessageConstant.GET_SETMEAL_COUNT_REPORT_SUCCESS,map);
-    }*/
+    }
 
 
     //获取运营统计数据

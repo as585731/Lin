@@ -115,32 +115,47 @@
                     <template>
                         <el-tabs v-model="activeName" type="card">
                             <el-tab-pane label="基本信息" name="first">
-                                <el-form label-position="right" label-width="100px">
+                                <el-form label-position="right" label-width="100px" :rules="rules" :model="formData">
 
                                     <el-row>
                                         <el-col :span="12">
-                                            <el-form-item label="用户名">
+                                            <el-form-item label="用户名" prop="username">
                                                 <el-input v-model="formData.username"/>
                                             </el-form-item>
                                         </el-col>
+                                        
+                                        <el-col :span="12">
+                                            <el-form-item label="密码" prop="password" >
+                                                <el-input v-model="formData.password" type="password"/>
+                                            </el-form-item>
+                                        </el-col>
+                                    </el-row>
+                                    
+                                    
+                                    
+                                    <el-row>
                                         <el-col :span="12">
                                             <el-form-item label="性别">
                                                 <el-input v-model="formData.gender"/>
                                             </el-form-item>
                                         </el-col>
-                                    </el-row>
-                                    <el-row>
                                         <el-col :span="12">
                                             <el-form-item label="生日">
                                                 <el-input v-model="formData.birthday"/>
                                             </el-form-item>
                                         </el-col>
-                                        <el-col :span="12">
+                                       
+                                    </el-row>
+                                    <el-row>
+                                        <el-col :span="24">
                                             <el-form-item label="联系电话">
                                                 <el-input v-model="formData.telephone"/>
                                             </el-form-item>
                                         </el-col>
+                                        
                                     </el-row>
+                                    
+                                    
                                     <el-row>
                                         <el-col :span="24">
                                             <el-form-item label="备注">
@@ -299,7 +314,11 @@
             dialogFormVisible4Edit:false,//控制编辑窗口显示/隐藏
             dialogFormVisible4Password:false,//控制密码修改窗口显示/隐藏
             password:'',//用户第一次输入的密码
-            passwordTwo:''//用户第二次宿儒的密码
+            passwordTwo:'',//用户第二次宿儒的密码
+            rules: {//校验规则
+                username: [{required: true, message: '用户名不能为空', trigger: 'blur'}],
+                password: [{required: true, message: '密码不能为空', trigger: 'blur'}]
+            },
         },
         created() {
             this.findPage();
