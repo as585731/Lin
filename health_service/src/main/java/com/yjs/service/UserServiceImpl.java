@@ -15,7 +15,6 @@ import com.yjs.pojo.Role;
 import com.yjs.pojo.User;
 import com.yjs.pojo.User;
 import com.yjs.service.UserService;
-import com.yjs.utlis.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import redis.clients.jedis.Jedis;
@@ -29,7 +28,7 @@ import java.util.Set;
 
 @Service(interfaceClass = UserService.class)
 public class UserServiceImpl implements UserService{
-    
+
     //注入几个dao对象
     @Autowired
     private UserDao userDao;
@@ -37,38 +36,38 @@ public class UserServiceImpl implements UserService{
     private RoleDao roleDao;
     @Autowired
     private PermissionDao permissionDao;
-    
+
     //根据用户名查询User
     @Override
     public User findUserByUsername(String username) {
         //1、根据用户查询user
         User user = userDao.findUserByUsername(username);
-        
+
         //非空判断
         if (user!=null) {
             //2、根据用户的id查询角色
-           Set<Role> roles = roleDao.findByUid(user.getId());
+            Set<Role> roles = roleDao.findByUid(user.getId());
 
-           //3、根据角色id查询角色的权限对象
+            //3、根据角色id查询角色的权限对象
             if (roles !=null&&roles.size()>0) {
                 //循环遍历出每个角色对象
                 for (Role role : roles) {
                     //拿到角色的id
                     Integer roleId = role.getId();
                     //查询出该角色的所属权限对象
-                   Set<Permission> permissions =  permissionDao.findByRoleId(roleId);
-                   //将该权限对象集合，设置进角色对象内
+                    Set<Permission> permissions =  permissionDao.findByRoleId(roleId);
+                    //将该权限对象集合，设置进角色对象内
                     role.setPermissions(permissions);
                 }
                 //将该角色对象集合设置进user对象
                 user.setRoles(roles);
             }
         }
-       //返回user对象
+        //返回user对象
         return user;
     }
 
-    
+
 
 
     @Override
@@ -82,16 +81,11 @@ public class UserServiceImpl implements UserService{
 
     @Override
     //分页查询
-    public PageResult pageQuery(Integer currentPage, Integer pageSize, String queryString) throws Exception {
+    public PageResult pageQuery(Integer currentPage, Integer pageSize, String queryString) {
         //使用插件进行分页查询
         PageHelper.startPage(currentPage,pageSize);
         //传入条件进行查询
         Page<User> page =  userDao.selectByCondition(queryString);
-        List<User> result = page.getResult();
-        for (User user : result) {
-            String date = DateUtils.parseDate2String(user.getBirthday());
-            user.setBirth(date);
-        }
         //从page对象中取出我们要的数据，封装入PageResult对象返回
         return new PageResult(page.getTotal(),page.getResult());
     }
@@ -161,6 +155,11 @@ public class UserServiceImpl implements UserService{
             }
         }
     }
-    
+
+    @Override
+    public void editPass(User user){
+        //根据用户名修改当前对象的密码
+        userDao.editPass(user);
+    }
 
 }

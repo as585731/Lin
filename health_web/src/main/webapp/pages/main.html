@@ -13,101 +13,203 @@
     <link rel="stylesheet" href="../plugins/font-awesome/css/font-awesome.min.css">
     <link rel="stylesheet" href="../css/style.css">
     <style type="text/css">
-    .el-main{
-        position: absolute;
-        top: 70px;
-        bottom: 0px;
-        left: 200px;
-        right: 10px;
-        padding: 0;
-    }
+        .el-main {
+            position: absolute;
+            top: 70px;
+            bottom: 0px;
+            left: 200px;
+            right: 10px;
+            padding: 0;
+        }
     </style>
 
 
 </head>
 <body class="hold-transition skin-purple sidebar-mini">
-    <div id="app">
+<div id="app">
+    <el-container>
+        <el-header class="main-header" style="height:70px;">
+            <nav class="navbar navbar-static-top" :class=''>
+                <!-- Logo -->
+                <a href="#" class="logo" style="text-align:center">
+                    <span class="logo-lg"><img src="../img/logo.png"></span>
+                </a>
+                <div class="right-menu">
+                    <span class="help"><i class="fa fa-exclamation-circle" aria-hidden="true"></i>帮助</span>
+                    <el-dropdown class="avatar-container right-menu-item" trigger="click">
+                        <div class="avatar-wrapper">
+                            <img src="../img/user2-160x160.jpg" class="user-avatar">
+                            {{username}}
+                        </div>
+                        <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item divided>
+                                <span style="display:block;" @click="Visible4Password = true,password=[]">修改密码</span>
+                            </el-dropdown-item>
+                            <el-dropdown-item divided>
+                                <span style="display:block;"><a href="/logout.do">退出</a></span>
+                            </el-dropdown-item>
+                        </el-dropdown-menu>
+                    </el-dropdown>
+                </div>
+            </nav>
+        </el-header>
         <el-container>
-            <el-header  class="main-header" style="height:70px;">
-                <nav class="navbar navbar-static-top" :class=''>
-                    <!-- Logo -->
-                    <a href="#" class="logo" style="text-align:center">
-                        <span class="logo-lg"><img src="../img/logo.png"></span>
-                    </a>
-                    <div class="right-menu">
-                        <span class="help"><i class="fa fa-exclamation-circle" aria-hidden="true"></i>帮助</span>
-                        <el-dropdown class="avatar-container right-menu-item" trigger="click">
-                            <div class="avatar-wrapper">
-                                <img src="../img/user2-160x160.jpg" class="user-avatar">
-                                {{username}}
-                            </div>
-                            <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item divided>
-                                    <span style="display:block;">修改密码</span>
-                                </el-dropdown-item>
-                                <el-dropdown-item divided>
-                                        <span style="display:block;"><a href="/logout.do">退出</a></span>
-                                    </el-dropdown-item>
-                            </el-dropdown-menu>
-                        </el-dropdown>
-                    </div>
-                </nav>
-            </el-header>
+            <el-aside width="200px">
+                <el-menu>
+                    <!--菜单-->
+                    <el-submenu v-for="menu in menuList" :index="menu.path">
+                        <template slot="title">
+                            <i class="fa" :class="menu.icon"></i>
+                            {{menu.name}}
+                        </template>
+                        <template v-for="child in menu.children">
+                            <el-menu-item :index="child.path">
+                                <a :href="child.linkUrl" target="right">{{child.name}}</a>
+                            </el-menu-item>
+                        </template>
+                    </el-submenu>
+
+                </el-menu>
+            </el-aside>
             <el-container>
-                <el-aside width="200px">
-                    <el-menu>
-                        <!--菜单-->
-                        <el-submenu v-for="menu in menuList" :index="menu.path">
-                            <template slot="title">
-                                <i class="fa" :class="menu.icon"></i>
-                                {{menu.name}}
-                            </template>
-                            <template v-for="child in menu.children">
-                                <el-menu-item :index="child.path">
-                                    <a :href="child.linkUrl" target="right">{{child.name}}</a>
-                                </el-menu-item>
-                            </template>
-                        </el-submenu>
-                        
-                    </el-menu>
-                </el-aside>
-                <el-container>
-                    <iframe name="right" class="el-main" src="ordersetting.html" width="100%" height="580px" frameborder="0"></iframe>
-                </el-container>
+
+
+                <div class="add-form">
+                    <el-form :model="password" ref="password" label-width="100px">
+                        <el-dialog title="修改密码" :visible.sync="Visible4Password">
+
+                            <el-row>
+                                <el-col :span="18">
+                                    <el-form-item label="原始密码" prop="password">
+                                        <el-input placeholder="请输入原始密码" v-model="password.m1" type="password"/>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+
+                            <el-row>
+                                <el-col :span="18">
+                                    <el-form-item label="请输入新密码" prop="password">
+                                        <el-input placeholder="请输入新密码" v-model="password.m2" type="password"/>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+
+                            <el-row>
+                                <el-col :span="18">
+                                    <el-form-item label="确认密码" prop="password">
+                                        <el-input placeholder="确认密码" v-model="password.m3" type="password"/>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+
+                            <div slot="footer" class="dialog-footer">
+                                <el-button @click="Visible4Password = false ,password =''">取消</el-button>
+                                <el-button type="primary" @click="handlePass()">确定</el-button>
+                            </div>
+                        </el-dialog>
+                    </el-form>
+                </div>
+
+
+                <iframe name="right" class="el-main" src="ordersetting.html" width="100%" height="580px"
+                        frameborder="0"></iframe>
             </el-container>
         </el-container>
-    </div>
+    </el-container>
+</div>
 </body>
 <!-- 引入组件库 -->
 <script src="../js/vue.js"></script>
 <script src="../plugins/elementui/index.js"></script>
-<script src="../js/axios-0.18.0.js"></script>
 <script type="text/javascript" src="../js/jquery.min.js"></script>
+<script src="../js/axios-0.18.0.js"></script>
 
 <script>
-    var vue = new Vue({
+
+    var app = new Vue({
         el: '#app',
-        data:{
-            username:null,//用户名
-            menuList:[]
+        validatePass: (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请输入密码'));
+            } else {
+                if (this.password.m1 !== '') {
+                    this.$refs.password.validateField('checkPass');
+                }
+                callback();
+            }
         },
-        created(){
+        validatePass2: (rule, value, callback) => {
+            if (value === '') {
+                callback(new Error('请再次输入密码'));
+            } else if (value !== this.password.m1) {
+                callback(new Error('两次输入密码不一致!'));
+            } else {
+                callback();
+            }
+        },
+        data: {
+
+            username: null,//用户名
+            menuList: [],
+            Visible4Password: false,//密码框是否显示
+            password: {
+                m1: '',
+                m2: '',
+                m3: ''
+            },   //密码
+            /*rules: {//校验规则
+                m1: [{validator: this.validatePass, trigger: 'blur'}],
+                m2: [{validator: this.validatePass2, trigger: 'blur'}]
+            }*/
+        },
+
+        created() {
             //发送请求获取当前登录用户的用户名
-            axios.get('/user/getUsername.do').then((response)=>{
+            axios.get('/user/getUsername.do').then((response) => {
                 this.username = response.data.data;
-                //发送请求动态获取当前登录用户的菜单
-                axios.get('/menu/getMenu.do').then((response)=>{
-                    // console.log(JSON.stringify(response))
-                    //console.log(JSON.stringify(this.menuList));
-                    vue.menuList = response.data.data;
-                    //console.log(JSON.stringify(this.menuList));
-                });
             });
+
+            //发送请求动态获取当前登录用户的菜单
+            axios.get('/menu/getMenu.do').then((response) => {
+                // console.log(JSON.stringify(response))
+                console.log(JSON.stringify(this.menuList));
+                this.menuList = response.data.data;
+                console.log(JSON.stringify(this.menuList));
+            });
+        },
+        methods: {
+            //提交密码
+            handlePass() {
+                //判断两次密码是否相同
+                if (this.password.m2 === this.password.m3) {
+                    //如果相同，隐藏密码修改窗口后台发送请求，修改密码
+                    axios.get('/user/editPass.do?password=' + this.password.m1 + '&newPassword=' + this.password.m2).then((response) => {
+                        if (response.data.flag) {
+                            //弹出成功提示信息
+                            this.$message({
+                                message: response.data.message,
+                                type: 'success'
+                            });
+                            //隐藏弹框
+                            this.Visible4Password = false;
+                            //退出登录
+                            location.href="/logout.do";
+                        } else {
+                            //失败弹出提示
+                            this.$message.error(response.data.message);
+                        }
+                    });
+
+                } else {
+                    //弹出提示
+                    this.$message.error("两次密码输入不同");
+                }
+            }
         }
-    });
-    $(function() {
-            var wd = 200;
-            $(".el-main").css('width', $('body').width() - wd + 'px');
+    })
+    $(function () {
+        var wd = 200;
+        $(".el-main").css('width', $('body').width() - wd + 'px');
     });
 </script>
 </html>

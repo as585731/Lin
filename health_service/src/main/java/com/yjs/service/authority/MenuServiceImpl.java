@@ -15,12 +15,7 @@ import java.util.Map;
 import java.util.Objects;
 
 @Service(interfaceClass = MenuService.class)
-@Transactional
 public class MenuServiceImpl implements MenuService {
-
-    @Autowired
-    private MenuDao menuDao;
-
 
     @Override
     //查询user对象对应的菜单
@@ -29,8 +24,9 @@ public class MenuServiceImpl implements MenuService {
         return menus;
     }
 
+    @Autowired
+    private MenuDao menuDao;
 
-    
     @Override
     //根据表单提交的数据新增菜单
     @Transactional
@@ -59,24 +55,29 @@ public class MenuServiceImpl implements MenuService {
         }
         //查询当前菜单是否具有子菜单
         checkSubmenu(id);
-        
+
         //根据id删除指定菜单
         menuDao.deleteById(id);
     }
 
     @Override
-    //以传入的check对象进行数据更新
+    //以传入的Menu对象进行数据更新
     public void edit(Menu menu) {
         //判断是否有修改菜单的父菜单属性
         Integer parentMenuId = menuDao.findById(menu.getId()).getParentMenuId();
         //进行判断
-        if (!Objects.equals(menu.getParentMenuId(),parentMenuId)){
+        if (!Objects.equals(menu.getParentMenuId(),parentMenuId)) {
+            //判断父菜单是否修改成了自己，如果是，抛出异常
+            if (Objects.equals(menu.getParentMenuId(),menu.getId())){
+                throw new RuntimeException("父菜单不能设置为自己");
+            }
             //如果不相等，代表有修改,进行是否有子菜单的判断
             checkSubmenu(menu.getId());
         }
+
         //设置该菜单的level等级
         setLevel(menu);
-        
+
         //调用dao层进行更新数据
         menuDao.edit(menu);
     }
@@ -98,8 +99,8 @@ public class MenuServiceImpl implements MenuService {
     public List<Map> selectParentMenuIds() {
         return menuDao.selectParentMenuIds();
     }
-    
-   //设置菜单对象的level属性
+
+    //设置菜单对象的level属性
     public void setLevel(Menu menu) {
         //判断父id是否为null，如果是，则将等级设置为1，否则为2
         if (Objects.equals(menu.getParentMenuId(),null)){
@@ -108,7 +109,7 @@ public class MenuServiceImpl implements MenuService {
             menu.setLevel(2);
         }
     }
-    
+
     //删除菜单或者修改菜单等级时，判断该菜单是否有子菜单，如果有，则抛出异常提示
     public void checkSubmenu(Integer id){
         //调用dao查询该菜单是否有子菜单

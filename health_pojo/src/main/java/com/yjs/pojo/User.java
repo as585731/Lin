@@ -1,5 +1,8 @@
 package com.yjs.pojo;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+import org.springframework.format.annotation.DateTimeFormat;
+
 import java.io.Serializable;
 import java.util.Date;
 import java.util.HashSet;
@@ -10,8 +13,8 @@ import java.util.Set;
  */
 public class User implements Serializable{
     private Integer id; // 主键
+    //@DateTimeFormat(pattern = "yyyy-MM-dd")
     private Date birthday; // 生日
-    private String birth; // 生日
     private String gender; // 性别
     private String username; // 用户名，唯一
     private String password; // 密码
@@ -19,14 +22,6 @@ public class User implements Serializable{
     private String station; // 状态
     private String telephone; // 联系电话
     private Set<Role> roles = new HashSet<Role>(0);//对应角色集合
-
-    public String getBirth() {
-        return birth;
-    }
-
-    public void setBirth(String birth) {
-        this.birth = birth;
-    }
 
     public Integer getId() {
         return id;
@@ -36,10 +31,11 @@ public class User implements Serializable{
         this.id = id;
     }
 
+    @JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
     public Date getBirthday() {
         return birthday;
     }
-
+    //@JsonFormat(pattern="yyyy-MM-dd",timezone = "GMT+8")
     public void setBirthday(Date birthday) {
         this.birthday = birthday;
     }
@@ -99,5 +95,5 @@ public class User implements Serializable{
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
     }
-    
+
 }
